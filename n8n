@@ -1,3 +1,39 @@
 for using docker
 1. install docker then install n8n using cmd
 2. Then install ngrok using cmd ngrok (3FDVh88rQIb0a6rO4HF25vlNGI0_3b2Z8sANA8Kn23NZdkjvm) Arifur@8427
+
+//RUN NGROK IN DOCKER
+ধাপ ১: পুরানো বা ক্রাশ হওয়া কনটেইনারটি ডিলিট করুন
+প্রথমে আপনার কমান্ড প্রম্পটে (CMD) নিচের কমান্ডটি দিয়ে এই মাত্র তৈরি হওয়া অকেজো কনটেইনারটি মুছে দিন:
+
+Bash
+docker rm -f n8n-ngrok
+ধাপ ২: সঠিক ফরম্যাটে কমান্ডটি রান করুন
+এবার নিচের কমান্ডটি লক্ষ্য করুন। এখানে টোকেনের আগে ঠিক যেভাবে NGROK_AUTHTOKEN= লেখা আছে, হুবহু সেভাবে কপি করে আপনার কমান্ড প্রম্পটে পেস্ট করুন এবং এন্টার চাপুন:
+
+Bash
+docker run -d --name n8n-ngrok -e NGROK_AUTHTOKEN=3FDVh88rQIb0a6rO4HF25vlNGI0_3b2Z8sANA8Kn23NZdkjvm -p 4040:4040 ngrok/ngrok:latest http host.docker.internal:5678
+(খেয়াল করুন: আমি আপনার টোকেনটির শুরুতে NGROK_AUTHTOKEN= যোগ করে দিয়েছি।)
+
+ধাপ ৩: চেক করে দেখুন
+কমান্ডটি রান করার পর ডকার ড্যাশবোর্ডে যান। এবার আর প্লে (Play) বাটনে ক্লিক করতে হবে না, এটি অটোমেটিক সবুজ আইকন (Green Icon) নিয়ে সচল হয়ে যাবে।
+
+সবুজ আইকন আসার পর ব্রাউজারে গিয়ে http://localhost:4040 লিংকে ঢুকলে আপনি আপনার n8n-এর জন্য পাবলিক ওয়েব হুক লিংকটি পেয়ে যাবেন। এবার কি গ্রিন আইকনটি এসেছে?
+//END OF THE RUN IN DOCKER
+
+
+//I HAVE RUN N8N AND NGROK IN DOCKER THEN SETUP IS 
+এই এররটি আসার কারণ হচ্ছে আপনার ওল্ড n8n কন্টেইনারটি এখনও ব্যাকগ্রাউন্ডে রয়ে গেছে। ডকারে একই নামের দুটি কন্টেইনার একসাথে রাখা যায় না।
+
+উইন্ডোজ কমান্ড প্রম্পটে (CMD) জাস্ট নিচের ২টি কমান্ড পর পর রান করুন, তাহলেই এটা ফিক্স হয়ে যাবে:
+
+১. পুরনো কন্টেইনারটি ডিলিট করুন:
+Bash
+docker rm -f n8n
+২. আপনার ngrok লিংক সহ নতুন করে n8n রান করুন:
+Bash
+docker run -d --name n8n -p 5678:5678 -e WEBHOOK_URL=https://judiciary-decathlon-catcall.ngrok-free.dev -v n8n_data:/home/node/.n8n n8nio/n8n
+৩. এবার চেক করুন:
+সফলভাবে রান হওয়ার পর আপনার ব্রাউজারে http://localhost:5678 এ যান। একটি নতুন ওয়ার্কফ্লো তৈরি করে Webhook নোড নিলে দেখতে পাবেন সেটি আপনার ngrok-এর ওই লাইভ লিংকটি ([https://judiciary-decathlon-catcall.ngrok-free.dev](https://judiciary-decathlon-catcall.ngrok-free.dev)) দেখাচ্ছে।
+
+তার মানে আপনার n8n এবং ngrok এখন ফুললি কানেক্টেড!
